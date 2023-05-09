@@ -19,19 +19,31 @@ describe("/api/topics endpoint", () => {
         return request(app).get("/api/topics").expect(200);
     });
 
-    it("should return the list of expected topics from the data file.", () => {
-        return request(app).get("/api/topics").expect(200).then((res) => {
-            const { topicData } = data;
-            expect(res.body).toEqual({ topics: topicData})
+        it("The data should have the required properties", () => {
+            return request(app).get("/api/topics").expect(200).then((res) => {
+            res.body.topics.forEach((topic) => {
+                expect(topic).toHaveProperty("slug");
+                expect(topic).toHaveProperty("description");
+                expect(typeof topic.slug).toBe("string");
+                expect(typeof topic.description).toBe("string");
+            })
+            
+            })
         })
-    });
 
-    it("should return a 404 error if the wrong route is provided", () => {
-        return request(app).get("/api/topic").expect(404).then((res) => {
-            expect(res.res.statusMessage).toEqual("Not Found");
+        it("should return the list of expected topics from the data file.", () => {
+            return request(app).get("/api/topics").expect(200).then((res) => {
+                const { topicData } = data;
+                expect(res.body).toEqual({ topics: topicData})
+            })
+        });
+
+        it("should return a 404 error if the wrong route is provided", () => {
+            return request(app).get("/api/topic").expect(404).then((res) => {
+                expect(res.res.statusMessage).toEqual("Not Found");
+            })
         })
-    })
-    })
+        })
     
 
 
