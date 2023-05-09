@@ -1,9 +1,19 @@
 const request = require("supertest");
+const seed = require("../db/seeds/seed");
+const db = require("../db/connection");
 const data = require("../db/data/test-data");
 const app = require("../app");
 
-describe("/api/topics endpoint", () => {
-    test("First test", () => {
+beforeEach(() => {
+    return seed(data);
+    
+})
+afterAll(() => {
+    db.end();
+})
 
+describe("/api/topics endpoint", () => {
+    test("Should return status - 200 ok", () => {
+        return request(app).get("/api/topics").expect(200);
     })
 })
