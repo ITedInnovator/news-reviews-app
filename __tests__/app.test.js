@@ -24,6 +24,12 @@ describe("/api/topics endpoint", () => {
             const { topicData } = data;
             expect(res.body).toEqual({ topics: topicData})
         })
+    });
+
+    it("should return a 404 error if the wrong route is provided", () => {
+        return request(app).get("/api/topic").expect(404).then((res) => {
+            expect(res.res.statusMessage).toEqual("Not Found");
+        })
     })
     })
     
