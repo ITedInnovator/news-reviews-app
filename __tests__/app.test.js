@@ -3,6 +3,7 @@ const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const data = require("../db/data/test-data");
 const app = require("../app");
+const jsonDoc = require("../endpoints.json");
 
 beforeEach(() => {
     return seed(data);
@@ -33,7 +34,6 @@ describe("/api/topics endpoint", () => {
 
         it("should return a 404 error if the wrong route is provided", () => {
             return request(app).get("/api/topic").expect(404).then((res) => {
-                // console.log(res)
                 expect(res.body.msg).toEqual("Not Found");
             })
         });
@@ -60,10 +60,9 @@ describe("GET /api documentation", () => {
         return request(app).get("/api").expect(200);
     })
 
-    it("should have the 'GET /api' and 'GET /api/topics' property on the JSON response body", () => {
+    it("should return a JSON response body", () => {
         return request(app).get("/api").expect(200).then((res) => {
-            expect(res.body).toHaveProperty("GET /api");
-            expect(res.body).toHaveProperty("GET /api/topics");
+            expect(res.body).toEqual(jsonDoc);
         })
     });
 
