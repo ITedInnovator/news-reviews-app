@@ -66,4 +66,32 @@ describe("GET /api documentation", () => {
             expect(res.body).toHaveProperty("GET /api/topics");
         })
     });
+
+    it("should have a description property on all endpoints", () => {
+        return request(app).get("/api").expect(200).then( res => {
+            const { body } = res;
+            
+            for ( let endpoint in body){
+                expect(body[endpoint]).toHaveProperty("description");
+            }
+        })
+    })
+
+    it("all endpoints except 'GET /api' should have queries and exampleResponse properties", () => {
+        return request(app).get("/api").expect(200).then( res => {
+            
+            const { body } = res;
+            
+            for ( let endpoint in body){
+                
+                if(endpoint != 'GET /api'){
+                    expect(body[endpoint]).toHaveProperty("queries");
+                    expect(body[endpoint]).toHaveProperty("exampleResponse");
+
+                }
+                
+            }
+        })
+        
+    })
 })
