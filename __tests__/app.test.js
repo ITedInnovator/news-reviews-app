@@ -94,4 +94,46 @@ describe("GET /api documentation", () => {
         })
         
     })
+
+    it("All endpoints exampleResponse property object should have a key of topics which is an array", () => {
+        return request(app).get("/api").expect(200).then( res => {
+            const { body } = res;
+            
+            for ( let endpoint in body){
+                
+                if(endpoint != 'GET /api'){
+
+                    const exampleResponse = body[endpoint].exampleResponse;
+
+                    const topics = body[endpoint].exampleResponse.topics;
+                    expect(exampleResponse).toHaveProperty("topics");
+                    expect(Array.isArray(topics)).toBe(true);
+
+                }
+            }
+        })
+    })
+
+    it("The topics array should contain one or more objects with slug and description properties", () => {
+        return request(app).get("/api").expect(200).then( res => {
+            const { body } = res;
+            
+            for ( let endpoint in body){
+                
+                if(endpoint != 'GET /api'){
+
+                    const topics = body[endpoint].exampleResponse.topics;
+                    
+                    topics.forEach((topic) => {
+                        expect(typeof topic).toBe("object");
+                        expect(Array.isArray(topic)).toBe(false);
+                        expect(topic).toHaveProperty("slug");
+                        expect(topic).toHaveProperty("description");
+                    })
+
+                }
+            }
+        })
+    })
+
 })
