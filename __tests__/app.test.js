@@ -41,4 +41,29 @@ describe("/api/topics endpoint", () => {
     
 
 
+        it("should return the list of expected topics from the data file.", () => {
+            return request(app).get("/api/topics").expect(200).then((res) => {
+                const { topicData } = data;
+                expect(res.body).toEqual({ topics: topicData})
+            })
+        });
+
+        it("should return a 404 error if the wrong route is provided", () => {
+            return request(app).get("/api/topic").expect(404).then((res) => {
+                expect(res.res.statusMessage).toEqual("Not Found");
+            })
+        })
+        })
+
+describe("GET /api documentation", () => {
+    it("should return Status - 200 from the endpoint", () => {
+        return request(app).get("/api").expect(200);
+    })
+
+    it("should have the 'GET /api' and 'GET /api/topics' property on the JSON response body", () => {
+        return request(app).get("/api").expect(200).then((res) => {
+            expect(res.body).toHaveProperty("GET /api");
+            expect(res.body).toHaveProperty("GET /api/topics");
+        })
+    });
 })
