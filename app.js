@@ -1,9 +1,12 @@
 const express = require("express");
 const { getTopics } = require("./controllers/topics.controllers");
 const { getArticleById } = require("./controllers/articles.controllers");
+const { getApiDocs } = require("./controllers/api.controller");
 const app = express();
 
 app.use(express.json());
+
+app.get("/api", getApiDocs)
 
 app.get("/api/topics", getTopics);
 
@@ -21,6 +24,5 @@ app.use((err, req, res, next) => {
 app.use((err, req, res , next ) => {
     res.status(err.status).send({status: err.status, msg: err.msg});
 })
-
 
 module.exports = app;
