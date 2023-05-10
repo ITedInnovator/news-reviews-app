@@ -77,4 +77,16 @@ describe("GET /api/articles/:article_id", () => {
 
         })
     })
+
+    it("should return a 400 error if the user puts in an incorrect data type with a message of 'Incorrect type for an ID' which should also prevent SQL injection", () => {
+        return request(app).get("/api/articles/SELECT * FROM articles 1;").expect(400).then( res => {
+            expect(res.body.msg).toBe('Incorrect type for an ID');
+        })
+    })
+
+    it("should return a 404 error if the user puts an id number which does not exist and an error message of 'There is not an article at this ID sorry!'", () => {
+        return request(app).get("/api/articles/40").expect(404).then( res => {
+            expect(res.body.msg).toBe('There is not an article at this ID sorry!');
+        })
+    })
 })

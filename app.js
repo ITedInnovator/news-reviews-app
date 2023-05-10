@@ -14,7 +14,12 @@ app.all("*",(req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
-    console.log(err);
+    if(err.code === '22P02') res.status(400).send({msg: 'Incorrect type for an ID' })
+    else next(err)
+})
+
+app.use((err, req, res , next ) => {
+    res.status(err.status).send({status: err.status, msg: err.msg});
 })
 
 
