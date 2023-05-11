@@ -332,6 +332,22 @@ describe("Comment endpoints", () => {
                 })
             })
         })
+
+        test("should return STATUS - 404 if an ID of the correct type is provided which doesn't exist in the database", () => {
+            return request(app).get("/api/articles/200/comments").expect(404).then( res => {
+                const { msg } = res.body
+
+                expect(msg).toBe("There is not an article at this ID sorry!");
+            })
+        })
+
+        test("should return STATUS - 400 if an ID of incorrect type if provided", () => {
+            return request(app).get("/api/articles/nonsense/comments").expect(400).then( res => {
+                const { msg } = res.body;
+
+                expect(msg).toBe('Incorrect type for an ID');
+            })
+        })
     })
 })
 
