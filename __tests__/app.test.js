@@ -138,17 +138,39 @@ describe("GET /api documentation", () => {
 
         it("The exampleResponse article object should have the relevant keys expected to be on the response.", () => {
             return request(app).get("/api").expect(200).then( res => {
-                const { body } = res;
-                const article = body["GET /api/articles/:article_id"].exampleResponse.article
-            
-            expect(article).toHaveProperty("article_id");
-            expect(article).toHaveProperty("author");
-            expect(article).toHaveProperty("title");
-            expect(article).toHaveProperty("body");
-            expect(article).toHaveProperty("topic");
-            expect(article).toHaveProperty("created_at");
-            expect(article).toHaveProperty("votes");
-            expect(article).toHaveProperty("article_img_url");
+                    const { body } = res;
+                    const article = body["GET /api/articles/:article_id"].exampleResponse.article
+                
+                    expect(article).toHaveProperty("article_id");
+                    expect(article).toHaveProperty("author");
+                    expect(article).toHaveProperty("title");
+                    expect(article).toHaveProperty("body");
+                    expect(article).toHaveProperty("topic");
+                    expect(article).toHaveProperty("created_at");
+                    expect(article).toHaveProperty("votes");
+                    expect(article).toHaveProperty("article_img_url");
+
+            })
+        })
+
+        it("The exampleResponse articles array of objects should have the relevant keys expected to be on the response.", () => {
+            return request(app).get("/api").expect(200).then( res => {
+                    const { body } = res;
+                    const articles = body["GET /api/articles"].exampleResponse.articles
+                    
+                    expect(Array.isArray(articles)).toBe(true);
+
+                    articles.forEach(article => {
+                        expect(article).toHaveProperty("article_id");
+                        expect(article).toHaveProperty("author");
+                        expect(article).toHaveProperty("title");
+                        expect(article).toHaveProperty("topic");
+                        expect(article).toHaveProperty("created_at");
+                        expect(article).toHaveProperty("votes");
+                        expect(article).toHaveProperty("article_img_url");
+                        expect(article).toHaveProperty("comment_count");
+                    })
+                    
 
             })
         })
