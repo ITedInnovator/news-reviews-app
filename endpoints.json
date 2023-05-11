@@ -15,15 +15,15 @@
     "queries": [],
     "exampleResponse": {
       "article" : {
-    "article_id": 1,
-    "title": "Living in the shadow of a great man",
-    "topic": "mitch",
-    "author": "butter_bridge",
-    "body": "I find this existence challenging",
-    "created_at": "1594329060000",
-    "votes": "100",
-    "article_img_url":
-      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        "article_id": 1,
+        "title": "Living in the shadow of a great man",
+        "topic": "mitch",
+        "author": "butter_bridge",
+        "body": "I find this existence challenging",
+        "created_at": "1594329060000",
+        "votes": "100",
+        "article_img_url":
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
       }
     }
   },
@@ -54,6 +54,30 @@
         }
       ]
         
+      }
+    },
+    "GET /api/articles/:article_id/comments": {
+      "description": "Returns an array of comments for the given article ID.",
+      "queries": [],
+      "exampleResponse": {
+        "comments": [
+          {
+          "comment_id": 24,
+          "votes": 10,
+          "created_at":"2021-07-08 21:45:00",
+          "author": "anthony",
+          "body": "I do like this article but it could cover x a bit more.",
+          "article_id": 10
+          },
+          {
+          "comment_id": 27,
+          "votes": 15,
+          "created_at":"2021-01-24 13:30:00",
+          "author": "trevor",
+          "body": "This article is terrible and insensitive. Why would anyone write this?",
+          "article_id": 10
+          }
+      ]
       }
     }
   }
