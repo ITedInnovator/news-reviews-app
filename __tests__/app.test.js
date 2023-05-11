@@ -5,6 +5,7 @@ const data = require("../db/data/test-data");
 const app = require("../app");
 const jsonDoc = require("../endpoints.json");
 
+
 beforeEach(() => {
     return seed(data);
     
@@ -137,17 +138,39 @@ describe("GET /api documentation", () => {
 
         it("The exampleResponse article object should have the relevant keys expected to be on the response.", () => {
             return request(app).get("/api").expect(200).then( res => {
-                const { body } = res;
-                const article = body["GET /api/articles/:article_id"].exampleResponse.article
-            
-            expect(article).toHaveProperty("article_id");
-            expect(article).toHaveProperty("author");
-            expect(article).toHaveProperty("title");
-            expect(article).toHaveProperty("body");
-            expect(article).toHaveProperty("topic");
-            expect(article).toHaveProperty("created_at");
-            expect(article).toHaveProperty("votes");
-            expect(article).toHaveProperty("article_img_url");
+                    const { body } = res;
+                    const article = body["GET /api/articles/:article_id"].exampleResponse.article
+                
+                    expect(article).toHaveProperty("article_id");
+                    expect(article).toHaveProperty("author");
+                    expect(article).toHaveProperty("title");
+                    expect(article).toHaveProperty("body");
+                    expect(article).toHaveProperty("topic");
+                    expect(article).toHaveProperty("created_at");
+                    expect(article).toHaveProperty("votes");
+                    expect(article).toHaveProperty("article_img_url");
+
+            })
+        })
+
+        it("The exampleResponse articles array of objects should have the relevant keys expected to be on the response.", () => {
+            return request(app).get("/api").expect(200).then( res => {
+                    const { body } = res;
+                    const articles = body["GET /api/articles"].exampleResponse.articles
+                    
+                    expect(Array.isArray(articles)).toBe(true);
+
+                    articles.forEach(article => {
+                        expect(article).toHaveProperty("article_id");
+                        expect(article).toHaveProperty("author");
+                        expect(article).toHaveProperty("title");
+                        expect(article).toHaveProperty("topic");
+                        expect(article).toHaveProperty("created_at");
+                        expect(article).toHaveProperty("votes");
+                        expect(article).toHaveProperty("article_img_url");
+                        expect(article).toHaveProperty("comment_count");
+                    })
+                    
 
             })
         })
@@ -157,51 +180,111 @@ describe("GET /api documentation", () => {
 
 })
 
-describe("GET /api/articles/:article_id", () => {
-    it("should return a 200 - status when passed with a valid value for the id", () => {
+describe("/api/articles endpoints", () => {
+
+    describe("GET /api/articles/:article_id", () => {
+    
+        it("should return a 200 - status when passed with a valid value for the id", () => {
         return request(app).get("/api/articles/1").expect(200);
     })
 
-    it("should return a 200 - status and the response body with the required properties", () => {
-        return request(app).get("/api/articles/1").expect(200).then( res => {
-            const { body } = res;
-            const { article } = body;
+        it("should return a 200 - status and the response body with the required properties", () => {
+            return request(app).get("/api/articles/1").expect(200).then( res => {
+                const { body } = res;
+                const { article } = body;
 
-            expect(article).toHaveProperty("article_id");
-            expect(article).toHaveProperty("author");
-            expect(article).toHaveProperty("title");
-            expect(article).toHaveProperty("body");
-            expect(article).toHaveProperty("topic");
-            expect(article).toHaveProperty("created_at");
-            expect(article).toHaveProperty("votes");
-            expect(article).toHaveProperty("article_img_url");
+                expect(article).toHaveProperty("article_id");
+                expect(article).toHaveProperty("author");
+                expect(article).toHaveProperty("title");
+                expect(article).toHaveProperty("body");
+                expect(article).toHaveProperty("topic");
+                expect(article).toHaveProperty("created_at");
+                expect(article).toHaveProperty("votes");
+                expect(article).toHaveProperty("article_img_url");
+            })
         })
-    })
 
-    it("should return the expected value for article_id and the types for the other article properties as specified in the database", () => {
-        return request(app).get("/api/articles/1").expect(200).then( res => {
-            const { article } = res.body;
-            expect(article.article_id).toBe(1);
-            expect(typeof article.author).toBe('string');
-            expect( typeof article.title).toBe('string');
-            expect(typeof article.body).toBe('string');
-            expect(typeof article.topic).toBe('string');
-            expect(typeof article.created_at).toBe("string");
-            expect(typeof article.votes).toBe("number");
-            expect(typeof article.article_img_url).toBe('string');
+        it("should return the expected value for article_id and the types for the other article properties as specified in the database", () => {
+            return request(app).get("/api/articles/1").expect(200).then( res => {
+                const { article } = res.body;
+                expect(article.article_id).toBe(1);
+                expect(typeof article.author).toBe('string');
+                expect( typeof article.title).toBe('string');
+                expect(typeof article.body).toBe('string');
+                expect(typeof article.topic).toBe('string');
+                expect(typeof article.created_at).toBe("string");
+                expect(typeof article.votes).toBe("number");
+                expect(typeof article.article_img_url).toBe('string');
+            })
         })
-    })
 
-    it("should return a 400 error if the user puts in an incorrect data type with a message of 'Incorrect type for an ID' which should also prevent SQL injection", () => {
-        return request(app).get("/api/articles/SELECT * FROM articles 1;").expect(400).then( res => {
-            expect(res.body.msg).toBe('Incorrect type for an ID');
+        it("should return a 400 error if the user puts in an incorrect data type with a message of 'Incorrect type for an ID' which should also prevent SQL injection", () => {
+            return request(app).get("/api/articles/SELECT * FROM articles 1;").expect(400).then( res => {
+                expect(res.body.msg).toBe('Incorrect type for an ID');
+            })
         })
-    })
 
-    it("should return a 404 error if the user puts an id number which does not exist and an error message of 'There is not an article at this ID sorry!'", () => {
-        return request(app).get("/api/articles/40").expect(404).then( res => {
-            console.log(res)
-            expect(res.body.msg).toBe('There is not an article at this ID sorry!');
+        it("should return a 404 error if the user puts an id number which does not exist and an error message of 'There is not an article at this ID sorry!'", () => {
+            return request(app).get("/api/articles/40").expect(404).then( res => {
+                expect(res.body.msg).toBe('There is not an article at this ID sorry!');
+            })
+        })
+})
+
+    describe(" GET /api/articles", () => {
+        test("Expect a STATUS - 200 from the articles endpoint.", () => {
+            return request(app).get("/api/articles").expect(200);
+        })
+        
+        test("Properties expected from the articles table are present and the body property is not included", () => {
+            return request(app).get("/api/articles").expect(200).then( res => {
+                const { body } = res;
+                body.articles.forEach(article => {
+                    
+                    expect(article).toHaveProperty("article_id");
+                    expect(article).toHaveProperty("author");
+                    expect(article).toHaveProperty("title");
+                    expect(article).toHaveProperty("topic");
+                    expect(article).toHaveProperty("created_at");
+                    expect(article).toHaveProperty("votes");
+                    expect(article).toHaveProperty("article_img_url");
+                    expect(article).not.toHaveProperty("body");
+
+                })
+            })
+        })
+
+        test("Object has the property of comment_count which should match the number of comments expected for that article", () => {
+            return request(app).get("/api/articles").expect(200).then((res) => {
+                const { body } = res;
+
+                body.articles.forEach((article) => {
+                    expect(article).toHaveProperty("comment_count");
+                    if(article.article_id === 1){
+                        expect(article.comment_count).toBe("11")
+                    }
+                    if(article.article_id === 2){
+                        expect(article.comment_count).toBe("0");
+                    }
+
+                    if(article.article_id === 3){
+                        expect(article.comment_count).toBe("2");
+                    }
+                    
+                })
+            })
+        })
+
+        test("Check the articles are sorted by date in descending order", () => {
+
+            return request(app).get("/api/articles").expect(200).then( res => {
+                
+                const { body } = res;
+                expect(body.articles).toBeSortedBy("created_at", {descending: true} );
+            })
+
         })
     })
 })
+
+

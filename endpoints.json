@@ -26,5 +26,34 @@
       "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
       }
     }
+  },
+  "GET /api/articles": {
+    "description": "Returns an array of articles including the comment count.",
+    "queries": [],
+    "exampleResponse": {
+      "articles": [
+        {
+          "article_id": 1,
+          "title":"Living in the shadow of a great man",
+          "author":"butter_bridge",
+          "topic":"mitch",
+          "created_at":"2022-02-23 14:00:00",
+          "votes": 100,
+          "article_img_url":"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          "comment_count": 11
+        },
+        {
+          "article_id": 2,
+          "title":"Living in the shadow of a terrible man",
+          "author":"bridge_break",
+          "topic":"dennis",
+          "created_at":"2020-06-15 15:45:20",
+          "votes": 0,
+          "article_img_url":"https://images.pexels.com/photos/158651/2-news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          "comment_count": 100
+        }
+      ]
+        
+      }
+    }
   }
-}
