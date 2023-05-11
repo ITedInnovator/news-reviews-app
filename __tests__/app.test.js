@@ -92,34 +92,25 @@ describe("GET /api documentation", () => {
         
     })
 
-    it("All endpoints exampleResponse property object should have a key of topics which is an array", () => {
+    describe("GET /api/topics", () => {
+        it("The topics exampleResponse property object should have a key of topics which is an array", () => {
         return request(app).get("/api").expect(200).then( res => {
             const { body } = res;
-            
-            for ( let endpoint in body){
                 
-                if(endpoint != 'GET /api'){
 
-                    const exampleResponse = body[endpoint].exampleResponse;
+                    const exampleResponse = body["GET /api/topics"].exampleResponse;
 
-                    const topics = body[endpoint].exampleResponse.topics;
+                    const topics = body["GET /api/topics"].exampleResponse.topics;
                     expect(exampleResponse).toHaveProperty("topics");
                     expect(Array.isArray(topics)).toBe(true);
-
-                }
-            }
         })
     })
 
     it("The topics array should contain one or more objects with slug and description properties", () => {
         return request(app).get("/api").expect(200).then( res => {
             const { body } = res;
-            
-            for ( let endpoint in body){
                 
-                if(endpoint != 'GET /api'){
-
-                    const topics = body[endpoint].exampleResponse.topics;
+                    const topics = body["GET /api/topics"].exampleResponse.topics;
                     
                     topics.forEach((topic) => {
                         expect(typeof topic).toBe("object");
@@ -127,11 +118,42 @@ describe("GET /api documentation", () => {
                         expect(topic).toHaveProperty("slug");
                         expect(topic).toHaveProperty("description");
                     })
-
-                }
-            }
         })
     })
+
+    })
+
+    describe("GET /api/articles/:article_id", () => {
+        it("The exampleResponse object should have a key of article with a value that is an object.", () => {
+            return request(app).get("/api").expect(200).then(res => {
+                const { body } = res;
+                const exampleRes = body["GET /api/articles/:article_id"].exampleResponse
+
+                expect(exampleRes).toHaveProperty("article");
+                expect(typeof exampleRes.article).toBe("object");
+                expect(Array.isArray(exampleRes.article)).toBe(false);
+            })
+        })
+
+        it("The exampleResponse article object should have the relevant keys expected to be on the response.", () => {
+            return request(app).get("/api").expect(200).then( res => {
+                const { body } = res;
+                const article = body["GET /api/articles/:article_id"].exampleResponse.article
+            
+            expect(article).toHaveProperty("article_id");
+            expect(article).toHaveProperty("author");
+            expect(article).toHaveProperty("title");
+            expect(article).toHaveProperty("body");
+            expect(article).toHaveProperty("topic");
+            expect(article).toHaveProperty("created_at");
+            expect(article).toHaveProperty("votes");
+            expect(article).toHaveProperty("article_img_url");
+
+            })
+        })
+    })
+
+    
 
 })
 
