@@ -280,7 +280,7 @@ describe("/api/articles endpoints", () => {
             return request(app).get("/api/articles").expect(200).then( res => {
                 
                 const { body } = res;
-                expect(body.articles).toBeSortedBy("created_at", {descending: true} );
+                expect(body.articles).toBeSortedBy("created_at", { descending: true } );
             })
 
         })
@@ -306,6 +306,29 @@ describe("Comment endpoints", () => {
                     expect(comment).toHaveProperty("author");
                     expect(comment).toHaveProperty("body");
                     expect(comment).toHaveProperty("article_id");
+                })
+            })
+        })
+
+        test("should return an array of comments of the correct length from the article id passed as a parameter and includes the right comment_ids", () => {
+            return request(app).get("/api/articles/3/comments").expect(200).then(res => {
+                const {comments} = res.body
+                const commentIds = [10, 11]
+                    
+                expect(comments.length).toBe(2);
+
+                comments.forEach( comment => {
+                    expect(commentIds.includes(comment.comment_id)).toBe(true);
+                })
+            })
+        })
+
+        test("should return the comments in the correct order when sorted by created_at date", () => {
+            return request(app).get("/api/articles/1/comments").expect(200).then( res => {
+                const {comments} = res.body;
+
+                expect(comments).toBeSortedBy("created_at", {
+                    descending: true,
                 })
             })
         })
