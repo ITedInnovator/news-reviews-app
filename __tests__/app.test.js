@@ -205,3 +205,25 @@ describe("GET /api/articles/:article_id", () => {
         })
     })
 })
+
+describe("GET /api/articles/:article_id/comments", () => {
+    test("should return response STATUS - 200", () => {
+        return request(app).get("/api/articles/2/comments").expect(200);
+    })
+
+    test("should return an array of comment objects with the correct properties", () => {
+        return request(app).get("/api/articles/2/comments").expect(200).then((res) => {
+            const { body } = res;
+            expect(Array.isArray(body.comments)).toBe(true);
+
+            body.comments.forEach( comment => {
+                expect(comment).toHaveProperty("comment_id");
+                expect(comment).toHaveProperty("votes");
+                expect(comment).toHaveProperty("created_at");
+                expect(comment).toHaveProperty("author");
+                expect(comment).toHaveProperty("body");
+                expect(comment).toHaveProperty("article_id");
+            })
+        })
+    })
+})
