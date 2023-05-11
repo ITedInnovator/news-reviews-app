@@ -11,3 +11,15 @@ exports.selectArticle = (article_id) => {
         return article;
     })
 }
+
+exports.selectAll = () => {
+    const sql = `SELECT articles.article_id, articles.author, articles.title, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments) AS comment_count 
+    FROM articles JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY created_at DESC;`;
+
+    return db.query(sql).then( ({ rows }) => {
+        if(rows.length != 0){
+            return rows;
+        }
+    })
+
+}
