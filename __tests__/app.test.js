@@ -38,8 +38,6 @@ describe("/api/topics endpoint", () => {
             })
         });
         })
-    
-
 
         it("should return the list of expected topics from the data file.", () => {
             return request(app).get("/api/topics").expect(200).then((res) => {
@@ -94,34 +92,25 @@ describe("GET /api documentation", () => {
         
     })
 
-    it("All endpoints exampleResponse property object should have a key of topics which is an array", () => {
+    describe("GET /api/topics", () => {
+        it("The topics exampleResponse property object should have a key of topics which is an array", () => {
         return request(app).get("/api").expect(200).then( res => {
             const { body } = res;
-            
-            for ( let endpoint in body){
                 
-                if(endpoint != 'GET /api'){
 
-                    const exampleResponse = body[endpoint].exampleResponse;
+                    const exampleResponse = body["GET /api/topics"].exampleResponse;
 
-                    const topics = body[endpoint].exampleResponse.topics;
+                    const topics = body["GET /api/topics"].exampleResponse.topics;
                     expect(exampleResponse).toHaveProperty("topics");
                     expect(Array.isArray(topics)).toBe(true);
-
-                }
-            }
         })
     })
 
     it("The topics array should contain one or more objects with slug and description properties", () => {
         return request(app).get("/api").expect(200).then( res => {
             const { body } = res;
-            
-            for ( let endpoint in body){
                 
-                if(endpoint != 'GET /api'){
-
-                    const topics = body[endpoint].exampleResponse.topics;
+                    const topics = body["GET /api/topics"].exampleResponse.topics;
                     
                     topics.forEach((topic) => {
                         expect(typeof topic).toBe("object");
@@ -129,10 +118,90 @@ describe("GET /api documentation", () => {
                         expect(topic).toHaveProperty("slug");
                         expect(topic).toHaveProperty("description");
                     })
-
-                }
-            }
         })
     })
 
+    })
+
+    describe("GET /api/articles/:article_id", () => {
+        it("The exampleResponse object should have a key of article with a value that is an object.", () => {
+            return request(app).get("/api").expect(200).then(res => {
+                const { body } = res;
+                const exampleRes = body["GET /api/articles/:article_id"].exampleResponse
+
+                expect(exampleRes).toHaveProperty("article");
+                expect(typeof exampleRes.article).toBe("object");
+                expect(Array.isArray(exampleRes.article)).toBe(false);
+            })
+        })
+
+        it("The exampleResponse article object should have the relevant keys expected to be on the response.", () => {
+            return request(app).get("/api").expect(200).then( res => {
+                const { body } = res;
+                const article = body["GET /api/articles/:article_id"].exampleResponse.article
+            
+            expect(article).toHaveProperty("article_id");
+            expect(article).toHaveProperty("author");
+            expect(article).toHaveProperty("title");
+            expect(article).toHaveProperty("body");
+            expect(article).toHaveProperty("topic");
+            expect(article).toHaveProperty("created_at");
+            expect(article).toHaveProperty("votes");
+            expect(article).toHaveProperty("article_img_url");
+
+            })
+        })
+    })
+
+    
+
+})
+
+describe("GET /api/articles/:article_id", () => {
+    it("should return a 200 - status when passed with a valid value for the id", () => {
+        return request(app).get("/api/articles/1").expect(200);
+    })
+
+    it("should return a 200 - status and the response body with the required properties", () => {
+        return request(app).get("/api/articles/1").expect(200).then( res => {
+            const { body } = res;
+            const { article } = body;
+
+            expect(article).toHaveProperty("article_id");
+            expect(article).toHaveProperty("author");
+            expect(article).toHaveProperty("title");
+            expect(article).toHaveProperty("body");
+            expect(article).toHaveProperty("topic");
+            expect(article).toHaveProperty("created_at");
+            expect(article).toHaveProperty("votes");
+            expect(article).toHaveProperty("article_img_url");
+        })
+    })
+
+    it("should return the expected value for article_id and the types for the other article properties as specified in the database", () => {
+        return request(app).get("/api/articles/1").expect(200).then( res => {
+            const { article } = res.body;
+            expect(article.article_id).toBe(1);
+            expect(typeof article.author).toBe('string');
+            expect( typeof article.title).toBe('string');
+            expect(typeof article.body).toBe('string');
+            expect(typeof article.topic).toBe('string');
+            expect(typeof article.created_at).toBe("string");
+            expect(typeof article.votes).toBe("number");
+            expect(typeof article.article_img_url).toBe('string');
+        })
+    })
+
+    it("should return a 400 error if the user puts in an incorrect data type with a message of 'Incorrect type for an ID' which should also prevent SQL injection", () => {
+        return request(app).get("/api/articles/SELECT * FROM articles 1;").expect(400).then( res => {
+            expect(res.body.msg).toBe('Incorrect type for an ID');
+        })
+    })
+
+    it("should return a 404 error if the user puts an id number which does not exist and an error message of 'There is not an article at this ID sorry!'", () => {
+        return request(app).get("/api/articles/40").expect(404).then( res => {
+            console.log(res)
+            expect(res.body.msg).toBe('There is not an article at this ID sorry!');
+        })
+    })
 })
