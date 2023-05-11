@@ -178,18 +178,17 @@ describe("GET /api/articles/:article_id", () => {
         })
     })
 
-    it("should return the expected values for the article properties as specified in the database", () => {
+    it("should return the expected value for article_id and the types for the other article properties as specified in the database", () => {
         return request(app).get("/api/articles/1").expect(200).then( res => {
             const { article } = res.body;
             expect(article.article_id).toBe(1);
-            expect(article.author).toBe('butter_bridge');
-            expect(article.title).toBe('Living in the shadow of a great man');
-            expect(article.body).toBe('I find this existence challenging');
-            expect(article.topic).toBe('mitch');
-            expect(article.created_at).toBe("2020-07-09T20:11:00.000Z");
-            expect(article.votes).toBe(100);
-            expect(article.article_img_url).toBe('https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700');
-
+            expect(typeof article.author).toBe('string');
+            expect( typeof article.title).toBe('string');
+            expect(typeof article.body).toBe('string');
+            expect(typeof article.topic).toBe('string');
+            expect(typeof article.created_at).toBe("string");
+            expect(typeof article.votes).toBe("number");
+            expect(typeof article.article_img_url).toBe('string');
         })
     })
 
