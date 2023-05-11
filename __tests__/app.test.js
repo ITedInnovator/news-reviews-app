@@ -200,6 +200,7 @@ describe("GET /api/articles/:article_id", () => {
 
     it("should return a 404 error if the user puts an id number which does not exist and an error message of 'There is not an article at this ID sorry!'", () => {
         return request(app).get("/api/articles/40").expect(404).then( res => {
+            console.log(res)
             expect(res.body.msg).toBe('There is not an article at this ID sorry!');
         })
     })

@@ -18,11 +18,18 @@ app.all("*",(req, res, next) => {
 
 app.use((err, req, res, next) => {
     if(err.code === '22P02') res.status(400).send({msg: 'Incorrect type for an ID' })
-    else next(err)
+    else next(err);
 })
 
 app.use((err, req, res , next ) => {
-    res.status(err.status).send({status: err.status, msg: err.msg});
+    if(err.status && err.msg){
+        res.status(err.status).send({status: err.status, msg: err.msg});
+    } 
+    else next(err);
+})
+
+app.use((err, req, res, next) => {
+    if(res.status === 500) res.status(500).send({msg: 'An error has occurred on our end, please contact technical support'})
 })
 
 module.exports = app;
