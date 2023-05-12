@@ -299,6 +299,8 @@ describe("Comment endpoints", () => {
                 const { body } = res;
                 expect(Array.isArray(body.comments)).toBe(true);
 
+                expect(body.comments.length).toBe(0);
+
                 body.comments.forEach( comment => {
                     expect(comment).toHaveProperty("comment_id");
                     expect(comment).toHaveProperty("votes");
