@@ -15,3 +15,7 @@ exports.selectCommentsByArticleId = (article_id) => {
     
         
     }
+
+    exports.createNewComment = (article_id) => {
+    
+}

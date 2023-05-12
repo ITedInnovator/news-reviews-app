@@ -350,7 +350,24 @@ describe("Comment endpoints", () => {
                 expect(msg).toBe('Incorrect type for an ID');
             })
         })
-    })
 })
 
+describe("POST /api/articles/:article_id/comments", () => {
+    test("Returns STATUS - 200 when creating a new comment", () => {
+        return request(app).post("/api/articles/2/comments").expect(200);
+    })
 
+    test("Check the request body is an object with the required properties and expect the response body to be identical", () => {
+
+        const body = { username: "rogersop", body: "Oops I didn't mean to put that comment here."}
+
+        expect(body).toHaveProperty("username");
+        expect(body).toHaveProperty("body");
+
+        
+        return request(app).post("/api/articles/1/comments").send(body).expect(200).then((res) => {
+            expect(res.body).toEqual(body);
+        })
+    })
+})
+})
