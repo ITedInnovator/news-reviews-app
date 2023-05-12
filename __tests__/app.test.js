@@ -280,9 +280,75 @@ describe("/api/articles endpoints", () => {
             return request(app).get("/api/articles").expect(200).then( res => {
                 
                 const { body } = res;
-                expect(body.articles).toBeSortedBy("created_at", {descending: true} );
+                expect(body.articles).toBeSortedBy("created_at", { descending: true } );
             })
 
+        })
+    })
+})
+
+describe("Comment endpoints", () => {
+    
+    describe("GET /api/articles/:article_id/comments", () => {
+        test("should return response STATUS - 200", () => {
+            return request(app).get("/api/articles/2/comments").expect(200);
+        })
+
+        test("should return an array of comment objects with the correct properties", () => {
+            return request(app).get("/api/articles/5/comments").expect(200).then((res) => {
+                const { body } = res;
+                expect(Array.isArray(body.comments)).toBe(true);
+
+                expect(body.comments.length).toBe(2);
+
+                body.comments.forEach( comment => {
+                    expect(comment).toHaveProperty("comment_id");
+                    expect(comment).toHaveProperty("votes");
+                    expect(comment).toHaveProperty("created_at");
+                    expect(comment).toHaveProperty("author");
+                    expect(comment).toHaveProperty("body");
+                    expect(comment).toHaveProperty("article_id");
+                })
+            })
+        })
+
+        test("should return an array of comments of the correct length from the article id passed as a parameter and includes the right comment_ids", () => {
+            return request(app).get("/api/articles/3/comments").expect(200).then(res => {
+                const {comments} = res.body
+                const commentIds = [10, 11]
+                    
+                expect(comments.length).toBe(2);
+
+                comments.forEach( comment => {
+                    expect(commentIds.includes(comment.comment_id)).toBe(true);
+                })
+            })
+        })
+
+        test("should return the comments in the correct order when sorted by created_at date", () => {
+            return request(app).get("/api/articles/1/comments").expect(200).then( res => {
+                const {comments} = res.body;
+
+                expect(comments).toBeSortedBy("created_at", {
+                    descending: true,
+                })
+            })
+        })
+
+        test("should return STATUS - 404 if an ID of the correct type is provided which doesn't exist in the database", () => {
+            return request(app).get("/api/articles/200/comments").expect(404).then( res => {
+                const { msg } = res.body
+
+                expect(msg).toBe("There is not an article at this ID sorry!");
+            })
+        })
+
+        test("should return STATUS - 400 if an ID of incorrect type if provided", () => {
+            return request(app).get("/api/articles/nonsense/comments").expect(400).then( res => {
+                const { msg } = res.body;
+
+                expect(msg).toBe('Incorrect type for an ID');
+            })
         })
     })
 })
