@@ -295,11 +295,11 @@ describe("Comment endpoints", () => {
         })
 
         test("should return an array of comment objects with the correct properties", () => {
-            return request(app).get("/api/articles/2/comments").expect(200).then((res) => {
+            return request(app).get("/api/articles/5/comments").expect(200).then((res) => {
                 const { body } = res;
                 expect(Array.isArray(body.comments)).toBe(true);
 
-                expect(body.comments.length).toBe(0);
+                expect(body.comments.length).toBe(2);
 
                 body.comments.forEach( comment => {
                     expect(comment).toHaveProperty("comment_id");
