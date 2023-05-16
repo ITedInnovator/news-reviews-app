@@ -232,11 +232,11 @@ describe("/api/articles endpoints", () => {
 })
 
     describe(" GET /api/articles", () => {
-        test("Expect a STATUS - 200 from the articles endpoint.", () => {
+        it("Expect a STATUS - 200 from the articles endpoint.", () => {
             return request(app).get("/api/articles").expect(200);
         })
         
-        test("Properties expected from the articles table are present and the body property is not included", () => {
+        it("Properties expected from the articles table are present and the body property is not included", () => {
             return request(app).get("/api/articles").expect(200).then( res => {
                 const { body } = res;
                 body.articles.forEach(article => {
@@ -254,7 +254,7 @@ describe("/api/articles endpoints", () => {
             })
         })
 
-        test("Object has the property of comment_count which should match the number of comments expected for that article", () => {
+        it("Object has the property of comment_count which should match the number of comments expected for that article", () => {
             return request(app).get("/api/articles").expect(200).then((res) => {
                 const { body } = res;
 
@@ -275,7 +275,7 @@ describe("/api/articles endpoints", () => {
             })
         })
 
-        test("Check the articles are sorted by date in descending order", () => {
+        it("Check the articles are sorted by date in descending order", () => {
 
             return request(app).get("/api/articles").expect(200).then( res => {
                 
@@ -290,11 +290,11 @@ describe("/api/articles endpoints", () => {
 describe("Comment endpoints", () => {
     
     describe("GET /api/articles/:article_id/comments", () => {
-        test("should return response STATUS - 200", () => {
+        it("should return response STATUS - 200", () => {
             return request(app).get("/api/articles/2/comments").expect(200);
         })
 
-        test("should return an array of comment objects with the correct properties", () => {
+        it("should return an array of comment objects with the correct properties", () => {
             return request(app).get("/api/articles/5/comments").expect(200).then((res) => {
                 const { body } = res;
                 expect(Array.isArray(body.comments)).toBe(true);
@@ -312,7 +312,7 @@ describe("Comment endpoints", () => {
             })
         })
 
-        test("should return an array of comments of the correct length from the article id passed as a parameter and includes the right comment_ids", () => {
+        it("should return an array of comments of the correct length from the article id passed as a parameter and includes the right comment_ids", () => {
             return request(app).get("/api/articles/3/comments").expect(200).then(res => {
                 const {comments} = res.body
                 const commentIds = [10, 11]
@@ -325,7 +325,7 @@ describe("Comment endpoints", () => {
             })
         })
 
-        test("should return the comments in the correct order when sorted by created_at date", () => {
+        it("should return the comments in the correct order when sorted by created_at date", () => {
             return request(app).get("/api/articles/1/comments").expect(200).then( res => {
                 const {comments} = res.body;
 
@@ -335,7 +335,7 @@ describe("Comment endpoints", () => {
             })
         })
 
-        test("should return STATUS - 404 if an ID of the correct type is provided which doesn't exist in the database", () => {
+        it("should return STATUS - 404 if an ID of the correct type is provided which doesn't exist in the database", () => {
             return request(app).get("/api/articles/200/comments").expect(404).then( res => {
                 const { msg } = res.body
 
@@ -343,14 +343,51 @@ describe("Comment endpoints", () => {
             })
         })
 
-        test("should return STATUS - 400 if an ID of incorrect type if provided", () => {
+        it("should return STATUS - 400 if an ID of incorrect type if provided", () => {
             return request(app).get("/api/articles/nonsense/comments").expect(400).then( res => {
                 const { msg } = res.body;
 
                 expect(msg).toBe('Incorrect type for an ID');
             })
         })
-    })
 })
 
+describe("POST /api/articles/:article_id/comments", () => {
+    it("Returns STATUS - 200 when creating a new comment", () => {
+        return request(app).post("/api/articles/2/comments").send({ username: "rogersop", body: "Hoperfully this will make this test work correctly."}).expect(200);
+    })
 
+    it("Check the request body is an object with the required properties and expect the response body to have the same data in the required properties for the comments table.", () => {
+
+        const body = { username: "rogersop", body: "Oops I didn't mean to put that comment here."}
+
+        expect(body).toHaveProperty("username");
+        expect(body).toHaveProperty("body");
+
+        
+        return request(app).post("/api/articles/1/comments").send(body).expect(200).then((res) => {
+            expect(res.body.comment.author).toBe(body.username);
+            expect(res.body.comment.body).toBe(body.body);
+        })
+    })
+
+    it("should return a STATUS 400 bad request if the json object in teh request does not have the required properties", () => {
+
+        return request(app).post("/api/articles/1/comments").send({}).expect(400).then(res => {
+            const {body} = res;
+
+            expect(body.msg).toBe("Bad request properties insufficient")
+        })
+    })
+
+    it("should return a STATUS 404 not found if the article id doesn't exist", () => {
+        return request(app).post("/api/articles/40/comments").send({ username: "rogerops", body: "This is a new comment" }).expect(404).then( res => {
+            const { body } = res;
+
+            expect(body.msg).toBe("Resource does not exist");
+        })
+    })
+
+    
+})
+})
