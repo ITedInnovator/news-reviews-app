@@ -79,5 +79,13 @@
           }
       ]
       }
+    },
+    "POST /api/articles/:article_id/comments": {
+      "description": "Posts a new comment to the given article.",
+      "queries": [],
+      "exampleResponse": {
+        "author": "jbloggs",
+        "body": "This is a terrible blog and I would know!"
+      }
     }
   }
