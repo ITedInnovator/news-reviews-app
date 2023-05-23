@@ -14,7 +14,7 @@ exports.postNewComment = ( req, res, next) => {
     const { username, body } = req.body;
     const { article_id } = req.params;
 
-    createNewComment(article_id, username, body).then((rows) => {
+    return createNewComment(article_id, username, body).then(({rows}) => {
         const comment = rows[0];
         res.status(200).send({comment});
     }).catch(err => {
