@@ -342,6 +342,12 @@ describe("/api/articles endpoints", () => {
             expect(body.msg).toBe("Incorrect type for an ID");
         })
     })
+
+    it("should return a STATUS - 400 bad request if the inc_votes property is not set in the request", () => {
+        return request(app).patch("/api/articles/2").send({ nonsense_votes: 10 }).expect(400).then( ( {body} ) => {
+            expect(body.msg).toBe("Bad request properties insufficient");
+        })
+    })
     })
 })
 

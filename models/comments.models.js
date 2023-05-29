@@ -25,8 +25,6 @@ exports.createNewComment = (article_id, username, body) => {
         $1, $2, $3
     ) RETURNING *;`
 
-    if(!article_id || !username || !body) return Promise.reject({status: 400, msg: "Bad request properties insufficient"});
-
     const articleSql = `SELECT * FROM articles WHERE article_id = $1`;
 
     return db.query(articleSql, [article_id]).then( ({rows}) => {
