@@ -31,7 +31,7 @@ exports.updateArticle = (article_id, inc_votes) => {
 
     return db.query(articleSql, [article_id]).then( ({rows}) => {
         if(rows.length === 0) {
-            return Promise.reject({msg: "Article does not exist"});
+            return Promise.reject({ status: 404, msg: "Article does not exist!"});
         }
         
     }).then(() => {

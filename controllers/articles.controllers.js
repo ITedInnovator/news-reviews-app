@@ -27,13 +27,11 @@ exports.updateArticleVotes = (req, res, next) => {
     const { inc_votes } = body;
 
     updateArticle(article_id, inc_votes).then( ({ rows }) => {
-        console.log(rows);
         const article = rows[0];
         res.status(200).send({
         article
      })
     }).catch(err => {
-        // console.log(err)
         next(err);
      })
     
