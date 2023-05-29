@@ -23,3 +23,20 @@ exports.selectAll = () => {
     })
 
 }
+
+exports.updateArticle = (article_id, inc_votes) => {
+    const sql = `UPDATE articles SET votes = votes + $2 WHERE article_id = $1 RETURNING *;`;
+
+    const articleSql = `SELECT * FROM articles WHERE article_id = $1`;
+
+    return db.query(articleSql, [article_id]).then( ({rows}) => {
+        if(rows.length === 0) {
+            return Promise.reject({ status: 404, msg: "Article does not exist!"});
+        }
+        
+    }).then(() => {
+        return db.query(sql, [article_id, inc_votes]);
+    })
+
+    
+}
