@@ -11,7 +11,7 @@ beforeEach(() => {
     
 })
 afterAll(() => {
-    db.end();
+    return db.end();
 })
 
 describe("/api/topics endpoint", () => {
@@ -285,6 +285,70 @@ describe("/api/articles endpoints", () => {
 
         })
     })
+
+    describe("PATCH /api/articles/:article_id", () => {
+        it("Should return STATUS - 200 if passed a valid article id", () => {
+            return request(app).patch("/api/articles/1").send({inc_votes: 1}).expect(200);
+        })
+
+        it("should return a response with the expected properties", () => {
+            return request(app).patch("/api/articles/1").expect(200).send({inc_votes: 2}).then(( {body }) => {
+                const {article} = body
+                expect(article).toHaveProperty("votes");
+                expect(typeof body.article.votes).toBe("number");
+                expect(body.article).toHaveProperty("article_id");
+                expect(typeof body.article.article_id).toBe("number");
+                expect(body.article).toHaveProperty("author");
+                expect(typeof body.article.author).toBe("string");
+                expect(body.article).toHaveProperty("title");
+                expect(typeof body.article.title).toBe("string");
+                expect(body.article).toHaveProperty("topic");
+                expect(typeof body.article.topic).toBe("string");
+                expect(body.article).toHaveProperty("body");
+                expect(typeof body.article.body).toBe("string");
+                expect(body.article).toHaveProperty("created_at");
+                expect(typeof body.article.created_at).toBe("string");
+                expect(body.article).toHaveProperty("article_img_url")
+                expect(typeof body.article.article_img_url).toBe("string");
+            })
+        })
+
+        it("should update the votes and return the correct article values for each field with the updated vote number", () => {
+            return request(app).patch("/api/articles/2").send({ inc_votes: 10 }).expect(200).then(({ body }) => {
+                const { article } = body
+                const {article_id, author, article_img_url, created_at, topic, votes, title } = article;
+                expect(article_id).toBe(2);
+                expect(article.body).toBe("Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.");
+                expect(author).toBe("icellusedkars");
+                expect(article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");
+                expect(created_at).toBe("2020-10-16T05:03:00.000Z");
+                expect(topic).toBe("mitch");
+                expect(votes).toBe(10);
+                expect(title).toBe("Sony Vaio; or, The Laptop");
+
+            })
+        })
+
+        it("should return a STATUS 404 not found if the article id doesn't exist", () => {
+        return request(app).patch("/api/articles/40").send({ inc_votes: 2 }).expect(404).then( res => {
+            const { body } = res;
+
+            expect(body.msg).toBe("Article does not exist!");
+        })
+    })
+
+    it("should return a STATUS - 400 bad request if the article id is not a valid type", () => {
+        return request(app).patch("/api/articles/nonsense").expect(400).then( ({body}) => {
+            expect(body.msg).toBe("Incorrect type for an ID");
+        })
+    })
+
+    it("should return a STATUS - 400 bad request if the inc_votes property is not set in the request", () => {
+        return request(app).patch("/api/articles/2").send({ nonsense_votes: 10 }).expect(400).then( ( {body} ) => {
+            expect(body.msg).toBe("Bad request properties insufficient");
+        })
+    })
+    })
 })
 
 describe("Comment endpoints", () => {
@@ -384,7 +448,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         return request(app).post("/api/articles/40/comments").send({ username: "rogerops", body: "This is a new comment" }).expect(404).then( res => {
             const { body } = res;
 
-            expect(body.msg).toBe("Resource does not exist");
+            expect(body.msg).toBe("Article does not exist");
         })
     })
 

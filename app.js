@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const { getTopics } = require("./controllers/topics.controllers");
-const { getArticleById, getArticles } = require("./controllers/articles.controllers");
+const { getArticleById, getArticles, updateArticleVotes } = require("./controllers/articles.controllers");
 const { getApiDocs } = require("./controllers/api.controller");
 const { getCommentsByArticleId, postNewComment } = require("./controllers/comments.controllers");
 
@@ -21,7 +21,9 @@ app.get("/api/articles/:article_id", getArticleById);
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
-app.post("/api/articles/:article_id/comments", postNewComment)
+app.post("/api/articles/:article_id/comments", postNewComment);
+
+app.patch("/api/articles/:article_id", updateArticleVotes);
 
 app.all("*",(req, res, next) => {
         res.status(404).send({msg: "Not Found"});
@@ -29,8 +31,17 @@ app.all("*",(req, res, next) => {
 
 app.use((err, req, res, next) => {
     if(err.code === '22P02') res.status(400).send({msg: 'Incorrect type for an ID' })
-    else if(err.code === '23503') res.status(404).send({msg: "Resource does not exist"});
     else next(err);
+})
+
+app.use((err, req, res, next) => {
+    if(err.code === '23503') res.status(404).send({msg: "Resource does not exist"});
+    else next(err);
+})
+
+app.use((err, req, res, next) => {
+     if(err.code === '23502') res.status(400).send({msg: "Bad request properties insufficient"})
+     else next(err);
 })
 
 app.use((err, req, res , next ) => {
